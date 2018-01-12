@@ -1,4 +1,5 @@
 const axios = require('axios')
+const config = require('./config')
 
 class Bang {
   constructor(text, pattern = 'all', format = 'json') {
@@ -15,6 +16,7 @@ class Bang {
   }
 }
 
-Bang.API_KEY = process.env.BANG_API_KEY
+
+Bang.API_KEY = config.BANG_API_KEY
 
 module.exports = Bang
