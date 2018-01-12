@@ -15,6 +15,8 @@
 
 <script>
   import runtime from '../api/runtime.js'
+  import storage from '../util/storage.js'
+
   const url = 'http://htpmsg.jiecaojingxuan.com/msg/current'
 
   export default {
@@ -36,13 +38,19 @@
         if (this.isListening) {
           this.loop = setInterval(() => {
             this.queryQuestion().then(res => {
-              if (res.data && res.data.event) {
+              if (
+                res.data 
+                && res.data.type === 'showQuestion' 
+                && res.data.event 
+              ) {
                 let { desc, options } = res.data.event || {}
 
                 options = typeof options === 'string' ? (JSON.parse(options) || []) : (options || [])
                 this.problem = desc || ''
                 this.options = options
                 if (this.problem !== this.tmpProblem) {
+                  storage.set(this.problem, this.options)
+                  this.answers = []
                   this.queryFaqAi({
                     question: this.problem.replace(/\d+./, ''),
                     optionA: options[0],
@@ -50,9 +58,9 @@
                     optionC: options[2]
                   }).then(res => {
                     if (res && res.data) {
-                      // runtime.sendMessage({
-                      //   type: 'answer'
-                      // })
+                      runtime.sendMessage({
+                        type: 'answer'
+                      })
                       this.answers = res.data || []
                     } else {
                       this.answers = []
@@ -69,8 +77,8 @@
                 })
               }
             }).catch(e => {
-              this.problem = 'network problem'
-              this.options = []
+              // this.problem = 'network problem'
+              // this.options = []
             })
           }, 1000)
         } else {
@@ -95,7 +103,7 @@
       },
       queryFaqAi (data) {
         return new Promise((resolve, reject) => {
-          fetch('http://10.107.96.122:8080/faq-ai', {
+          fetch('http://127.0.0.1:8080/faq-ai', {
             method: 'POST',
             body: JSON.stringify(data),
             headers: {

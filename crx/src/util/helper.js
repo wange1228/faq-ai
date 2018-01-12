@@ -25,7 +25,14 @@ export function getDomain (url) {
   return resArr && resArr[1]
 }
 
-export async function focusOrCreateTab (url) {
+export async function createTab (url) {
+  tabs.create({
+    url,
+    'selected': true
+  })
+}
+
+export async function focusTab (url) {
   const wins = await windows.getAll({ 'populate': true }) || []
   let existTab = {}
 
@@ -39,13 +46,7 @@ export async function focusOrCreateTab (url) {
 
   const { id: tabId } = existTab
 
-  // if (tabId) {
-  //   tabs.update(tabId, { 'selected': true })
-  //   tabs.reload(tabId)
-  // } else {
-  tabs.create({
-    url,
-    'selected': true
-  })
-  // }
+  if (tabId) {
+    tabs.update(tabId, { 'selected': true })
+  }
 }
