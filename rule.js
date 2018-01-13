@@ -12,11 +12,21 @@ class Rule {
       const weights = []
       this.results.forEach((result) => {
         this.options.forEach((option, idx) => {
-          const reg = new RegExp(option, 'g')
-          const match = result.match(reg) || []
-          weights[idx] = (weights[idx] || 0) + match.length
+          // 字数太少的时候就合并查找
+          if (option.join('').length <= 2) {
+            const reg = new RegExp(option.join(''), 'g')
+            const match = result.match(reg) || []
+            weights[idx] = (weights[idx] || 0) + match.length
+          } else {
+            option.forEach((item) => {
+              const reg = new RegExp(item, 'g')
+              const match = result.match(reg) || []
+              weights[idx] = (weights[idx] || 0) + match.length
+            })
+          }
         })
       })
+
       resolve(weights)
     })
   }

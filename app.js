@@ -20,6 +20,7 @@ app.post('/faq-ai', function(req, res) {
   const options = [req.body.optionA, req.body.optionB, req.body.optionC]
 
   return new Ai(question, options).then((aiRes) => {
+    console.log('===================')
     let total = 0
     aiRes.forEach((val) => {
       total = total + val
@@ -31,6 +32,8 @@ app.post('/faq-ai', function(req, res) {
       ret: 0,
       data: [rateA, rateB, rateC]
     }
+    console.log(question)
+    console.log(options)
     console.log(output)
     res.end(JSON.stringify(output))
   }).catch((err) => {
