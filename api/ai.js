@@ -18,23 +18,22 @@ class Ai {
         new Filter(this.options[1]), // 过滤选项B
         new Filter(this.options[2]), // 过滤选项C
       ]).then((filterRes) => {
-        const keyA = this.question // 原提问作为长尾关键词
-        const keyB = Filter.arr2str(' ', filterRes[0]) // 过滤后的问题作为关键词
-
         const keyContact = filterRes[1].concat(filterRes[2]).concat(filterRes[3]) // 合并关键词
         const keyDistinct = [...new Set(keyContact)] // 关键词去重
 
-        const includeA = Filter.arr2str(' ', filterRes[1])
-        const includeB = Filter.arr2str(' ', filterRes[2])
-        const includeC = Filter.arr2str(' ', filterRes[3])
+        const includeA = Search.includeKeyword(filterRes[1])
+        const includeB = Search.includeKeyword(filterRes[2])
+        const includeC = Search.includeKeyword(filterRes[3])
 
-        const excludeBC = Filter.arr2str(' | ', Filter.arrCompare(keyDistinct, filterRes[1]))
-        const excludeAC = Filter.arr2str(' | ', Filter.arrCompare(keyDistinct, filterRes[2]))
-        const excludeAB = Filter.arr2str(' | ', Filter.arrCompare(keyDistinct, filterRes[3]))
+        const excludeBC = Search.excludeKeyword(Filter.arrCompare(keyDistinct, filterRes[1]))
+        const excludeAC = Search.excludeKeyword(Filter.arrCompare(keyDistinct, filterRes[2]))
+        const excludeAB = Search.excludeKeyword(Filter.arrCompare(keyDistinct, filterRes[3]))
 
-        const keyC = `${keyB} ${includeA} -(${excludeBC})` // 过滤后的问题+选项A作为关键词
-        const keyD = `${keyB} ${includeB} -(${excludeAC})` // 过滤后的问题+选项B作为关键词
-        const keyE = `${keyB} ${includeC} -(${excludeAB})` // 过滤后的问题+选项C作为关键词
+        const keyA = this.question // 原提问作为长尾关键词
+        const keyB = Search.includeKeyword(filterRes[0]) // 过滤后的问题作为关键词
+        const keyC = `${keyB} ${includeA} ${excludeBC}` // 过滤后的问题+选项A作为关键词
+        const keyD = `${keyB} ${includeB} ${excludeAC}` // 过滤后的问题+选项B作为关键词
+        const keyE = `${keyB} ${includeC} ${excludeAB}` // 过滤后的问题+选项C作为关键词
 
         Promise.all([
           new Search(keyA),

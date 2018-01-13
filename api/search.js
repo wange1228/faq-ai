@@ -1,4 +1,5 @@
 const baidu = require('baidu-search')
+const Filter = require('./filter')
 
 class Search {
   constructor(text) {
@@ -18,6 +19,15 @@ class Search {
         resolve(arr.join(''))
       })
     })
+  }
+
+  static excludeKeyword(keywordArr) {
+    const keywordStr = Filter.arr2str(' | ', keywordArr)
+    return `-(${keywordStr})`
+  }
+
+  static includeKeyword(keywordArr) {
+    return Filter.arr2str(' ', keywordArr)
   }
 }
 
